@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.1.0",
     author="Qiuqiang Kong",
     author_email="qiuqiangkong@gmail.com",
-    description="PyTorch implemention of part of librosa functions.",
+    description="PyTorch implementation of part of librosa functions.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/qiuqiangkong/torchlibrosa",
