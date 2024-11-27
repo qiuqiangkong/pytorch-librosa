@@ -257,8 +257,11 @@ class STFT(DFTBase):
             real: (batch_size, 1, time_steps, n_fft // 2 + 1)
             imag: (batch_size, 1, time_steps, n_fft // 2 + 1)
         """
-
-        x = input[:, None, :]  # (batch_size, channels_num, data_length)
+        if input.ndim == 2:
+            x = input[:, None, :]  # (batch_size, channels_num, data_length)
+        else:
+            assert input.ndim == 3
+            x = input
 
         if self.center:
             x = F.pad(x, pad=(self.n_fft // 2, self.n_fft // 2), mode=self.pad_mode)
