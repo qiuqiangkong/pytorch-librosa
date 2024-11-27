@@ -181,6 +181,7 @@ class STFT(DFTBase):
             pad_mode: str, e.g., 'reflect'
             freeze_parameters: bool, set to True to freeze all parameters. Set
                 to False to finetune all parameters.
+            transpose: Whether to swap the last two dimensions before returning.
         """
         super(STFT, self).__init__()
 
@@ -273,9 +274,13 @@ class STFT(DFTBase):
         imag = self.conv_imag(x)
         # (batch_size, n_fft // 2 + 1, time_steps)
 
+        real = real[:, None, :, :]
+        imag = imag[:, None, :, :]
+        # (batch_size, 1, n_fft // 2 + 1, time_steps)
+
         if self.transpose:
-            real = real[:, None, :, :].transpose(2, 3)
-            imag = imag[:, None, :, :].transpose(2, 3)
+            real = real.transpose(2, 3)
+            imag = imag.transpose(2, 3)
             # (batch_size, 1, time_steps, n_fft // 2 + 1)
 
         return real, imag
