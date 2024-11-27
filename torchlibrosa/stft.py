@@ -167,6 +167,7 @@ class STFT(DFTBase):
         center=True,
         pad_mode="reflect",
         freeze_parameters=True,
+        transpose: bool = True,
     ):
         r"""PyTorch implementation of STFT with Conv1d. The function has the
         same output as librosa.stft.
@@ -247,6 +248,8 @@ class STFT(DFTBase):
             for param in self.parameters():
                 param.requires_grad = False
 
+        self.transpose = transpose
+
     def forward(self, input):
         r"""Calculate STFT of batch of signals.
 
@@ -270,9 +273,10 @@ class STFT(DFTBase):
         imag = self.conv_imag(x)
         # (batch_size, n_fft // 2 + 1, time_steps)
 
-        real = real[:, None, :, :].transpose(2, 3)
-        imag = imag[:, None, :, :].transpose(2, 3)
-        # (batch_size, 1, time_steps, n_fft // 2 + 1)
+        if self.transpose:
+            real = real[:, None, :, :].transpose(2, 3)
+            imag = imag[:, None, :, :].transpose(2, 3)
+            # (batch_size, 1, time_steps, n_fft // 2 + 1)
 
         return real, imag
 
