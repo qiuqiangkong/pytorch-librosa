@@ -484,13 +484,14 @@ class ISTFT(DFTBase):
         else:
             self.ifft_window_sum = []
 
-    def forward(self, real_stft, imag_stft, length):
+    def forward(self, real_stft, imag_stft, length, transpose: bool = True):
         r"""Calculate inverse STFT.
 
         Args:
-            real_stft: (batch_size, channels=1, time_steps, n_fft // 2 + 1)
-            imag_stft: (batch_size, channels=1, time_steps, n_fft // 2 + 1)
+            real_stft: (batch_size, channels=1, time_steps, n_fft // 2 + 1) if transpose=True else (batch_size, channels=1, n_fft // 2 + 1, time_steps)
+            imag_stft: (batch_size, channels=1, time_steps, n_fft // 2 + 1) if transpose=True else (batch_size, channels=1, n_fft // 2 + 1, time_steps)
             length: int
+            transpose: Whether the last two dims in real_stft and imag_stft need to be swapped
 
         Returns:
             real: (batch_size, data_length), output signals.
@@ -498,8 +499,11 @@ class ISTFT(DFTBase):
         assert real_stft.ndimension() == 4 and imag_stft.ndimension() == 4
         batch_size, _, frames_num, _ = real_stft.shape
 
-        real_stft = real_stft[:, 0, :, :].transpose(1, 2)
-        imag_stft = imag_stft[:, 0, :, :].transpose(1, 2)
+        real_stft = real_stft[:, 0, :, :]
+        imag_stft = imag_stft[:, 0, :, :]
+        if transpose:
+            real_stft = real_stft.transpose(1, 2)
+            imag_stft = imag_stft.transpose(1, 2)
         # (batch_size, n_fft // 2 + 1, time_steps)
 
         # Get full stft representation from spectrum using symmetry attribute.
